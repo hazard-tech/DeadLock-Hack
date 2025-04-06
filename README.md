@@ -61,74 +61,7 @@ local function notify(message, time, type)
     end
 end
 
--- Textbox for Duplication Amount
-MainTab:CreateInput({
-    Name = "Enter Card Dupe Amount",
-    PlaceholderText = "10",
-    RemoveTextAfterFocusLost = false,
-    Flag = "DupeAmount",
-    Callback = function(value)
-        dupeAmount = tonumber(value) or 10
-        if dupeAmount <= 0 then
-            dupeAmount = 10  -- Fallback value
-            StatusLabel.Text = "Invalid amount, defaulting to 10."
-        end
-    end
-})
 
--- Duplication Function
-local function duplicateCardsAndLaptops()
-    if dupeAmount <= 0 then
-        StatusLabel.Text = "Invalid amount!"
-        return
-    end
-
-    StatusLabel.Text = "Buying cards & laptops..."
-
-    -- Open Dealer UI
-    fireclickdetector(game.Workspace["Streetz War"].Anonymous.ClickDetector)
-    wait(2) -- Wait to ensure the UI is open
-    player.PlayerGui:WaitForChild("DealerGui")
-    local shopGui = player.PlayerGui.DealerGui.ShopFrame
-    shopGui.Visible = true
-    player.PlayerGui.DealerGui.Frame.Visible = false
-    game:GetService("RunService"):Set3dRenderingEnabled(false)
-
-    -- Position player correctly
-    repeat wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-    player.Character.HumanoidRootPart.CFrame = CFrame.new(-55, 4.5, 170)
-
-    wait(0.5)
-
-    -- Click buttons for purchasing
-    local cardButton = shopGui["Blank Card"]
-    local laptopButton = shopGui["laptop"]
-
-    for i = 1, dupeAmount do
-        task.wait()
-        -- Click the card button
-        if cardButton.Visible then
-            local cardPos = cardButton.AbsolutePosition
-            VirtualInputManager:SendMouseButtonEvent(cardPos.X + 150, cardPos.Y + 60, 0, true, game, 0)
-            task.wait(0.1)
-            VirtualInputManager:SendMouseButtonEvent(cardPos.X + 150, cardPos.Y + 60, 0, false, game, 0)
-        end
-
-        task.wait(0.1)
-
-        -- Click the laptop button
-        if laptopButton.Visible then
-            local laptopPos = laptopButton.AbsolutePosition
-            VirtualInputManager:SendMouseButtonEvent(laptopPos.X + 150, laptopPos.Y + 60, 0, true, game, 0)
-            task.wait(0.1)
-            VirtualInputManager:SendMouseButtonEvent(laptopPos.X + 150, laptopPos.Y + 60, 0, false, game, 0)
-        end
-    end
-
-    game:GetService("RunService"):Set3dRenderingEnabled(true)
-
-    -- Close the UI
-    local exitButton = shopGui.exit
     VirtualInputManager:SendMouseButtonEvent(exitButton.AbsolutePosition.X + 300, exitButton.AbsolutePosition.Y + 65, 0, true, game, 0)
     wait()
     VirtualInputManager:SendMouseButtonEvent(exitButton.AbsolutePosition.X + 300, exitButton.AbsolutePosition.Y + 65, 0, false, game, 0)
@@ -137,55 +70,6 @@ local function duplicateCardsAndLaptops()
     player.Character.HumanoidRootPart.CFrame = CFrame.new(954, 4.7, -61)
     wait(4)
 
-    -- Process Laptops
-    StatusLabel.Text = "Processing laptops..."
-    local laptopCount = 0
-    for _, v in pairs(player.Backpack:GetChildren()) do
-        if v.Name == "Laptop" then
-            laptopCount = laptopCount + 1
-        end
-    end
-
-    for i = 1, laptopCount - 1 do
-        spawn(function()
-            local args = { true, "NEW123" }
-            ReplicatedStorage.Assets.Other.GiverPunchmade:InvokeServer(unpack(args))
-        end)
-    end
-
-    wait(4)
-    player.Backpack.Laptop.Parent = player.Character
-    wait(4)
-
-    -- Process Cards
-    StatusLabel.Text = "Processing cards..."
-    local cardCount = 0
-    for _, v in pairs(player.Backpack:GetChildren()) do
-        if v.Name == "Loaded Card" then
-            cardCount = cardCount + 1
-        end
-    end
-
-    for i = 1, cardCount do
-        spawn(function()
-            local args = { false, "NEW123" }
-            ReplicatedStorage.Assets.Other.GiverPunchmade:InvokeServer(unpack(args))
-        end)
-    end
-
-    wait(1)
-    StatusLabel.Text = "Duplication Complete!"
-    player.Character.Humanoid:UnequipTools()
-end
-
--- Button for Duplication
-MainTab:CreateButton({
-    Name = "Start Card Duplication",
-    Callback = function()
-        duplicateCardsAndLaptops()
-    
-        end
-})
 local VisualsTab = Window:CreateTab("Visuals", 4483362458) -- Title, Image
 local VisualsSection = VisualsTab:CreateSection("Visuals")
 
